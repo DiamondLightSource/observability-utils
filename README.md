@@ -14,7 +14,7 @@ In the initial version the following utils are provided:
 * ```instrument_fastapi_app(app, name)``` - Sets up basic tracing as above and then turns on automated tracing of FastAPI calls.
 * ```set_console_exporter()``` - Turns on output of the capturesd traces in a local console/terminal to allow viewing of it without the need for an observability backend such as Jaeger or Promethus. Useful for debugging and testing.
 * ```get_tracer(name)``` - Retrieves the currently active Tracer object and labels is using a standard naming convention so that traces it produces are consistent across applications.
-* ```get_trace_context()`` - Retrives the current trace context (this is just a more clearly named version of the library function).
+* ```get_trace_context()``` - Retrives the current trace context (this is just a more clearly named version of the library function).
 * ```propagate_context_in_stomp_headers(headers, context)``` - Simplfies the propagation of the Tracing Context between services that support STOMP communication over a message bus.
 * ```retrieve_context_from_stomp_headers(frame)``` - Simplifies th reception of the Tracing Context by services that support STOMP communication over a message bus.
 
