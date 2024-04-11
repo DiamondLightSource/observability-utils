@@ -5,7 +5,7 @@
 
 # observability_utils
 
-A set of functions to reduce the boilerplate required to add observability to your service of module
+A set of functions to reduce the boilerplate required to add OpenTelemetry based observability to your Python service or module.
 
 At the moment there are not a great amount of util functions provided, but it is hoped that, as more observabilty code is added to our services and modules, this becomes the standard place to put code snippets that are commonly useful. 
 

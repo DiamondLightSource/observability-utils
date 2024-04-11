@@ -1,4 +1,4 @@
-from typing import Any, Optional, cast
+from typing import Any, Dict, Optional, cast
 
 from fastapi import FastAPI
 from opentelemetry.context import Context, get_current
@@ -90,12 +90,12 @@ def get_trace_context() -> Context:
 
 
 def propagate_context_in_stomp_headers(
-    headers: dict[str, Any], context: Optional[Context] = None
+    headers: Dict[str, Any], context: Optional[Context] = None
 ) -> None:
     """Utility to propagate Observability context via STOMP message header.
 
     Parameters:
-        headers (dict[str, Any]): The STOMP headers to add the context to
+        headers (Dict[str, Any]): The STOMP headers to add the context to
         context (Optional[Context]): The context object to add to the headers; if none
                                      is specified the current active one will be used.
     """
