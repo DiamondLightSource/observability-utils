@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: observability-utils
+  title: observability-utils
+  description: A set of function to reduce the boilerplate required to add observability to your service of module
+spec:
+  type: documentation
+  lifecycle: experimental
+  owner: group:default/core-data-acquisition
