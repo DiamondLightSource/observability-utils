@@ -12,6 +12,6 @@ docs_type: README
 git_platform: github.com
 github_org: DiamondLightSource
 package_name: observability_utils
-pypi: false
+pypi: true
 repo_name: observability-utils
 type_checker: pyright
