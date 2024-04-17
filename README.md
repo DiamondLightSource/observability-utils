@@ -1,6 +1,6 @@
 [![CI](https://github.com/DiamondLightSource/observability-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/DiamondLightSource/observability-utils/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/DiamondLightSource/observability-utils/branch/main/graph/badge.svg)](https://codecov.io/gh/DiamondLightSource/observability-utils)
-
+[![PyPI](https://img.shields.io/pypi/v/observability-utils.svg)](https://pypi.org/project/observability-utils)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # observability_utils
@@ -20,6 +20,7 @@ In the initial version the following utils are provided:
 
 Source          | <https://github.com/DiamondLightSource/observability-utils>
 :---:           | :---:
+PyPI            | `pip install observability-utils`
 Releases        | <https://github.com/DiamondLightSource/observability-utils/releases>
 
 Usage examples:
