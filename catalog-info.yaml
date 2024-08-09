@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: observability-utils
   title: observability-utils
-  description: A set of function to reduce the boilerplate required to add observability to your service of module
+  description: A set of functions to reduce the boilerplate required to add observability to your service of module
 spec:
   type: documentation
   lifecycle: experimental

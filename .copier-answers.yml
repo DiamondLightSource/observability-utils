@@ -1,10 +1,10 @@
 # Changes here will be overwritten by Copier
-_commit: 2.1.0
+_commit: 2.2.0
 _src_path: gh:DiamondLightSource/python-copier-template
 author_email: keith.ralphs@diamond.ac.uk
 author_name: Keith Ralphs
 component_owner: group:default/core-data-acquisition
-description: A set of function to reduce the boilerplate required to add observability
+description: A set of functions to reduce the boilerplate required to add observability
     to your service of module
 distribution_name: observability-utils
 docker: false
