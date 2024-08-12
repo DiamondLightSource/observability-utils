@@ -45,5 +45,3 @@ TRACER = get_tracer("my_rest_app")
 def my_func():
     #function body
 ```
-
-
