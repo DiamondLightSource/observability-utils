@@ -5,18 +5,21 @@
 
 # observability_utils
 
-A set of functions to reduce the boilerplate required to add OpenTelemetry based observability to your Python service or module.
+A set of functions and decorators to reduce the boilerplate required to add OpenTelemetry based observability to your Python service or module.
 
-At the moment there are not a great amount of util functions provided, but it is hoped that, as more observabilty code is added to our services and modules, this becomes the standard place to put code snippets that are commonly useful. 
+The decorators allow spans to be initialised which automatically capture identified parameters of the decorated method as Span Attributes. The
+context propagation helpers provide a pair of standard functions that can be used as parameters to streamline addition of this functionality.
 
 In the initial version the following utils are provided:
 * ```setup_tracing(name)``` - Sets up basic tracing using  a standardised naming convebstion so that the application is easily identifiable in visualisation tools.
-* ```instrument_fastapi_app(app, name)``` - Sets up basic tracing as above and then turns on automated tracing of FastAPI calls.
+* ```@init_tracing``` - a decorator version of setup_tracing
 * ```set_console_exporter()``` - Turns on output of the capturesd traces in a local console/terminal to allow viewing of it without the need for an observability backend such as Jaeger or Promethus. Useful for debugging and testing.
 * ```get_tracer(name)``` - Retrieves the currently active Tracer object and labels is using a standard naming convention so that traces it produces are consistent across applications.
 * ```get_trace_context()``` - Retrives the current trace context (this is just a more clearly named version of the library function).
+* ```get_context_propagator``` - Retrieves the current observability context info in a form suitable for propagating.
 * ```propagate_context_in_stomp_headers(headers, context)``` - Simplfies the propagation of the Tracing Context between services that support STOMP communication over a message bus.
 * ```retrieve_context_from_stomp_headers(frame)``` - Simplifies th reception of the Tracing Context by services that support STOMP communication over a message bus.
+* ```add_span_attributes``` - Simplifies the addition of named attributes to the current span.
 
 Source          | <https://github.com/DiamondLightSource/observability-utils>
 :---:           | :---:
@@ -27,7 +30,11 @@ Usage examples:
 
 ```python
 from fastapi import FastAPI
-from observability_utils import instrument_fastapi_app, get_tracer
+from observability_utils.decorators import start_as_current_span
+from observability_utils.tracing import setup_tracing, get_tracer
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+setup_tracing("my_rest_app")
 
 app = FastAPI(
     docs_url="/docs",
@@ -37,11 +44,11 @@ app = FastAPI(
     version=REST_API_VERSION,
 )
 
-instrument_fastapi_app(app, "my_rest_app")
+FastAPIInstrumentor().instrument_app(app)
 
 TRACER = get_tracer("my_rest_app")
 
-@TRACER.start_as_current_span("my_func",  kind=SpanKind.CLIENT)
-def my_func():
+start_as_current_span(TRACER, "fruit", "fruit.colour", "amount")
+def my_func(fruit : Fruit = "apple", amount : int = 0):
     #function body
 ```
