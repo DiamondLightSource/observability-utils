@@ -1,11 +1,13 @@
-from typing import Any, Dict, Optional, cast
+"""Convenience functions to simplify the use of OTEL standard functions and
+context proagation setup.
+"""
 
-from fastapi import FastAPI
+from typing import Any, cast
+
 from opentelemetry.context import Context, get_current
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
     OTLPSpanExporter,
 )
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.propagate import get_global_textmap
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
@@ -23,45 +25,31 @@ from opentelemetry.util.types import AttributeValue
 from stomp.utils import Frame
 
 
-def instrument_fastapi_app(app: FastAPI, name: str = None) -> None:
-    """Sets up automated Open Telemetry tracing for a FastAPI app. This should be called
-    in the main module of the app to establish the global TracerProvider and the name of
-    the application that the generated traces belong to. A SpanProcessor that will
-    export its trace information using the OTLP Open Telemetry protocol is then added.
-    The instrumentor is then invoked to instrument the FastAPI call handlers.
-    Thereafter, other files can use the get_tracer_provider call to hook in to the apps
-    OTEL infrastructure when creating new SpanProcessors or setting up manual Span
-    generation.
-
-    Args:
-        app (FastAPI): The FastAPI app object of the app to be instrumented.
-        name (str): The name to be used in spans to refer to the application.
-
-    """
-    if name is not None:
-        setup_tracing(name)
-    FastAPIInstrumentor().instrument_app(app)
-
-
-def setup_tracing(name: str) -> None:
-    """Sets up Open Telemetry tracing. This should be called at the start of your app
-    to establish the global TracerProvider and the name of the application that the
-    generated traces belong to. A SpanProcessor that will export its trace information
-    using the OTLP Open Telemetry protocol is then added. You will then need to
-    instrument the rest of your code using e.g. the get_tracer_provider call to hook
-    into the apps OTEL infrastructure when creating new SpanProcessors or setting up
-    manual Span generation.
+def setup_tracing(name: str, with_otlp_export: bool = True) -> None:
+    """Sets up Open Telemetry tracing. This should be called at the start of your
+    app to establish the global TracerProvider and the name of the application
+    that the generated traces belong to. A SpanProcessor that will export its trace
+    information using the OTLP Open Telemetry protocol is then added unless you
+    specify otherwise. You will then need to instrument the rest of your code using
+    e.g. the get_tracer_provider call to hook into the apps OTEL infrastructure
+    when creating new SpanProcessors or setting up manual Span generation. N.B. you
+    will need to call this before you use library specific functions like the
+    FastAPI instrumentor.
 
     Args:
         name (str): The name to be used in spans to refer to the application.
+        with_otlp_export (bool): Indicates whether an OTLP Exporter shoudld be set up
     """
     resource = Resource(attributes={"service.name": name})
     provider = TracerProvider(resource=resource)
-    provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+    if with_otlp_export:
+        provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
     set_tracer_provider(provider)
 
 
 def init_tracing(*args, **kwargs):
+    """A decorator version setup_tracing"""
+
     def inner(func):
         setup_tracing(kwargs["name"])
         func()
@@ -113,7 +101,7 @@ def get_context_propagator() -> dict[str, Any]:
 
 
 def propagate_context_in_stomp_headers(
-    headers: Dict[str, Any], context: Optional[Context] = None
+    headers: dict[str, Any], context: Context | None = None
 ) -> None:
     """Utility to propagate Observability context via STOMP message header.
 

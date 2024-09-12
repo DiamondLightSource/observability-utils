@@ -17,24 +17,24 @@ SEPARATOR = "."
 
 
 def _obj_of(param: str) -> str:
-    """Checks to see if the param name is of the form  a.b(.?) returning a if it is
+    """Checks to see if the param name is of the form  x.y(.?) returning x if it is
     or the unmodified param name itself if not
 
     Args:
         param: A string indicating a required object(s)/attibute combination relating to
-            a function paramter of the decorated method,acceptable forms are a, a.b,
-            a.b.c.d.etc. to an arbitrary level of depth where a is the function
+            a function paramter of the decorated method,acceptable forms are x, x.y,
+            x.y.z.a.etc. to an arbitrary level of depth where x is the function
             parameter in question.
 
-    Returns: The text up to the first dot in param, there is one, or param
+    Returns: The text up to the first dot in param, if there is one, or param
     """
     return param.partition(SEPARATOR)[0] if SEPARATOR in param else param
 
 
-def _attr_value_of(obj: str, attr: str = None) -> str:
+def _attr_value_of(obj: Any, attr: str | None = None) -> Any:
     """Parses and obtains the value of the specified attribute attr on the object obj,
     where obj is a paramter of the decorated method. N.B., attr may be of the form
-    a.b.c.d, i.e. indicating an attribute of a member object of obj at an arbitrary
+    x.y.z, i.e. indicating an attribute of a member object of obj at an arbitrary
     depth. In this case the while loop will parse attr, working its way down the object
     tree until the last one is reached and then rerieve the ramaining attribute value.
 
@@ -55,15 +55,15 @@ def _attr_value_of(obj: str, attr: str = None) -> str:
     return obj
 
 
-def _attr_path(param: str) -> str:
-    """The complement to obj_of, returns the sectio of the arg string after the first
+def _attr_path(param: str) -> str | None:
+    """The complement to obj_of, returns the section of the arg string after the first
     dot separator correspoding to the path to the required attribute, or None of there
     is no separator
 
     Args:
         param: A string indicating a required object(s)/attibute combination relating to
-            a function paramter of the decorated method,acceptable forms are a, a.b,
-            a.b.c.d.etc. to an arbitrary level of depth where a is the function
+            a function paramter of the decorated method,acceptable forms are x, x.y,
+            x.y.z.a.etc. to an arbitrary level of depth where x is the function
             parameter in question.
 
     Returns: The text after the first dot in param, there is one, or None
@@ -79,7 +79,7 @@ def start_as_current_span(tracer: Tracer, *span_args: str):
     Args:
         tracer: The OpenTelemetry tracer to which the required Span should be attached
         *span_args: The set of attribute identiers relating to the decorated method's
-            parameters whose values should be added to the Span as Attributes
+            parameters, whose values should be added to the Span as Attributes
 
     Returns: The decorator function
 
@@ -93,6 +93,8 @@ def start_as_current_span(tracer: Tracer, *span_args: str):
 
         Returns: The decorated function, pre-poplated with span information
         """
+
+        # first get the ordered list of potential parameters
         sig_arg_order = list(signature(func).parameters)
 
         def arg_value(span_arg: str, *args, **kwargs) -> str | bool | int | float:
@@ -108,6 +110,7 @@ def start_as_current_span(tracer: Tracer, *span_args: str):
                 The value of the requested argument, stringified if it is not an int,
                 bool, or float
             """
+            # handle requests for set of params first
             if span_arg in ("args"):
                 return str(args)
             if span_arg in ("kwargs"):
@@ -118,7 +121,7 @@ def start_as_current_span(tracer: Tracer, *span_args: str):
             index_from_sig = sig_arg_order.index(arg_obj_name)
             value = (
                 _attr_value_of(args[index_from_sig], arg_attr_name)
-                if arg_obj_name in args
+                if len(args) > index_from_sig
                 else _attr_value_of(kwargs[arg_obj_name], arg_attr_name)
                 if arg_obj_name in kwargs
                 else None
