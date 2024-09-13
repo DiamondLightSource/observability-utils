@@ -12,7 +12,6 @@ context propagation helpers provide a pair of standard functions that can be use
 
 In the initial version the following utils are provided:
 * ```setup_tracing(name)``` - Sets up basic tracing using  a standardised naming convebstion so that the application is easily identifiable in visualisation tools.
-* ```@init_tracing``` - a decorator version of setup_tracing
 * ```set_console_exporter()``` - Turns on output of the capturesd traces in a local console/terminal to allow viewing of it without the need for an observability backend such as Jaeger or Promethus. Useful for debugging and testing.
 * ```get_tracer(name)``` - Retrieves the currently active Tracer object and labels is using a standard naming convention so that traces it produces are consistent across applications.
 * ```get_trace_context()``` - Retrives the current trace context (this is just a more clearly named version of the library function).

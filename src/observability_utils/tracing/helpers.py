@@ -47,16 +47,6 @@ def setup_tracing(name: str, with_otlp_export: bool = True) -> None:
     set_tracer_provider(provider)
 
 
-def init_tracing(*args, **kwargs):
-    """A decorator version setup_tracing"""
-
-    def inner(func):
-        setup_tracing(kwargs["name"])
-        func()
-
-    return inner
-
-
 def set_console_exporter() -> None:
     """Add a SpanProcessor to route the tracing messages to the inbuilt console
     exporter so that the raw trace JSON is printed out there.
