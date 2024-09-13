@@ -99,7 +99,7 @@ def test_start_as_current_span(init_tracing):
         assert ("param2.b") in attributes
         assert attributes["param2.b"] == "blank"
         assert ("param2.node") in attributes
-        assert re.match(
+        assert re.fullmatch(
             "<test_decorators.Node object at .*>", attributes["param2.node"]
         )
         assert ("param2.node.a") in attributes
@@ -112,6 +112,40 @@ def test_start_as_current_span(init_tracing):
     one = Node()
     two = Node(a=5, n=one)
     decoratee(2, two)
+
+
+def test_start_as_current_span_capturing_args(init_tracing):
+    @start_as_current_span(
+        get_tracer(NAME),
+        "args",
+    )
+    def decoratee(param1, param2):
+        attributes = get_current_span().attributes  # type: ignore
+        assert "args" in attributes
+        assert re.fullmatch(
+            r"\(2,\s<test_decorators.Node object at .*>\)",
+            attributes["args"],
+        )
+
+    one = Node()
+    decoratee(2, one)
+
+
+def test_start_as_current_span_capturing_kwargs(init_tracing):
+    @start_as_current_span(
+        get_tracer(NAME),
+        "kwargs",
+    )
+    def decoratee(param1, param2):
+        attributes = get_current_span().attributes  # type: ignore
+        assert "kwargs" in attributes
+        assert re.fullmatch(
+            r"{'param2':\s<test_decorators.Node object at .*>,\s'param1':\s2}",
+            attributes["kwargs"],
+        )
+
+    one = Node()
+    decoratee(param2=one, param1=2)
 
 
 class Node:

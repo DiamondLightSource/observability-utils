@@ -9,6 +9,7 @@ from stomp.utils import Frame
 
 from observability_utils.tracing import (
     add_span_attributes,
+    get_context_propagator,
     get_tracer,
     propagate_context_in_stomp_headers,
     retrieve_context_from_stomp_headers,
@@ -35,6 +36,19 @@ def test_setup_tracing_with_console_exporter(init_tracing):
     assert tp.resource.attributes[NAME_KEY] == NAME
     assert isinstance(sp, BatchSpanProcessor)
     assert isinstance(sp.span_exporter, ConsoleSpanExporter)
+
+
+def test_get_context_propagator(init_tracing):
+    tr = cast(Tracer, get_tracer(NAME))
+    with tr.start_as_current_span("test"):
+        span_context = get_current_span().get_span_context()
+        traceparent_string = (
+            f"00-{format_trace_id(span_context.trace_id)}-"
+            f"{format_span_id(span_context.span_id)}-"
+            f"{span_context.trace_flags:02x}"
+        )
+        carrier = get_context_propagator()
+    assert carrier[TRACEPARENT_KEY] == traceparent_string
 
 
 def test_propagate_context_in_stomp_headers(init_tracing):
