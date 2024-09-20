@@ -7,10 +7,10 @@
 
 A set of functions and decorators to reduce the boilerplate required to add OpenTelemetry based observability to your Python service or module.
 
-The decorators allow spans to be initialised which automatically capture identified parameters of the decorated method as Span Attributes. The
-context propagation helpers provide a pair of standard functions that can be used as parameters to streamline addition of this functionality.
+The decorators allow spans to be initialised which automatically capture identified parameters of the decorated method as Span Attributes. The context propagation helpers provide a pair of standard functions that can be used as parameters to streamline addition of this functionality.
 
 In the initial version the following utils are provided:
+
 * ```setup_tracing(name)``` - Sets up basic tracing using  a standardised naming convebstion so that the application is easily identifiable in visualisation tools.
 * ```set_console_exporter()``` - Turns on output of the capturesd traces in a local console/terminal to allow viewing of it without the need for an observability backend such as Jaeger or Promethus. Useful for debugging and testing.
 * ```get_tracer(name)``` - Retrieves the currently active Tracer object and labels is using a standard naming convention so that traces it produces are consistent across applications.
