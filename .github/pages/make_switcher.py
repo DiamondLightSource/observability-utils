@@ -52,7 +52,7 @@ def get_versions(ref: str, add: str | None) -> list[str]:
     return versions
 
 
-def write_json(path: Path, repository: str, versions: str):
+def write_json(path: Path, repository: str, versions: list[str]):
     org, repo_name = repository.split("/")
     pages_url = f"https://{org}.github.io"
     if repo_name != f"{org}.github.io":
