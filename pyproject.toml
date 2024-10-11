@@ -12,8 +12,7 @@ classifiers = [
 ]
 description = "A set of functions to reduce the boilerplate required to add observability to your service of module"
 dependencies = [
-    "fastapi[all]<0.99",
-    "typing_extensions<4.6",
+    "fastapi[all]",
     "opentelemetry-distro",
     "opentelemetry-instrumentation-fastapi",
     "opentelemetry-exporter-otlp",
