@@ -4,16 +4,15 @@ using the raw opentelemetry decorators and context propagation functions"""
 import functools
 from _collections_abc import Callable
 from inspect import signature
-from typing import Any, Concatenate, TypeVar
+from typing import Any, Concatenate, ParamSpec, TypeVar
 
 from opentelemetry.context import attach
 from opentelemetry.propagate import get_global_textmap
 from opentelemetry.trace import SpanKind, Tracer
-from typing_extensions import ParamSpec
 
 T = TypeVar("T")
 P = ParamSpec("P")
-SEPARATOR = "."
+_SEPARATOR = "."
 
 
 def _obj_of(param: str) -> str:
@@ -28,7 +27,7 @@ def _obj_of(param: str) -> str:
 
     Returns: The text up to the first dot in param, if there is one, or param
     """
-    return param.partition(SEPARATOR)[0] if SEPARATOR in param else param
+    return param.partition(_SEPARATOR)[0] if _SEPARATOR in param else param
 
 
 def _attr_value_of(obj: Any, attr: str | None = None) -> Any:
@@ -48,9 +47,9 @@ def _attr_value_of(obj: Any, attr: str | None = None) -> Any:
 
     """
     if attr is not None:
-        while SEPARATOR in attr:
-            obj = getattr(obj, attr.partition(SEPARATOR)[0])
-            attr = attr.partition(SEPARATOR)[2]
+        while _SEPARATOR in attr:
+            obj = getattr(obj, attr.partition(_SEPARATOR)[0])
+            attr = attr.partition(_SEPARATOR)[2]
         return getattr(obj, attr)
     return obj
 
@@ -69,7 +68,7 @@ def _attr_path(param: str) -> str | None:
     Returns: The text after the first dot in param, there is one, or None
 
     """
-    return param.partition(SEPARATOR)[2] if SEPARATOR in param else None
+    return param.partition(_SEPARATOR)[2] if _SEPARATOR in param else None
 
 
 def start_as_current_span(tracer: Tracer, *span_args: str):
@@ -164,7 +163,7 @@ def use_propagated_context(
     context.
 
     Args:
-        func:The function to be decorated
+        func: The function to be decorated
 
     Returns:
         A wrapped version the function which accepts an extra pre-pended parameter to

@@ -35,7 +35,6 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 nodeenv==1.9.1
--e git+ssh://git@github.com/DiamondLightSource/observability-utils.git@07fd7ab62bb7773cc2c6ddd39b3ba5d0836f92a0#egg=observability_utils
 opentelemetry-api==1.27.0
 opentelemetry-distro==0.48b0
 opentelemetry-exporter-otlp==1.27.0
