@@ -1,3 +1,7 @@
+from .asserting_exporter import (
+    JsonObjectSpanExporter,
+    asserting_span_exporter,
+)
 from .decorators import (
     start_as_current_span,
     use_propagated_context,
@@ -24,4 +28,6 @@ __all__ = [
     "setup_tracing",
     "start_as_current_span",
     "use_propagated_context",
+    "asserting_span_exporter",
+    "JsonObjectSpanExporter",
 ]
