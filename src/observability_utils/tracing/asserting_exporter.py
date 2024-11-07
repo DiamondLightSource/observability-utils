@@ -11,10 +11,12 @@ from opentelemetry.sdk.trace.export import (
 
 
 class JsonObjectSpanExporter(SpanExporter):
-    """A custom span exporter to allow spans created by open telemetry tracing code to
-    be examined and verified during normal testing. When using the class it is
-    recommended to use the SimpleSpanProcessor rather than the BatchSpanProcessor to
-    keep the tests quick.
+    """A custom exporter to allow open telemetry spans to be examined
+    and verified during normal testing.
+    The first span that is entered is cached in a Future for retrieval in test code.
+    The span is effectively cleared when it is read, allowing a single instance of the
+    SpanExporter to be reused for multiple tests.
+    It is recommended to use with a SimpleSpanProcessor.
     """
 
     def __init__(

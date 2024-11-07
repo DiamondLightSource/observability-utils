@@ -9,7 +9,6 @@ from .decorators import (
 from .helpers import (
     add_span_attributes,
     get_context_propagator,
-    get_trace_context,
     get_tracer,
     propagate_context_in_stomp_headers,
     retrieve_context_from_stomp_headers,
@@ -20,7 +19,6 @@ from .helpers import (
 __all__ = [
     "add_span_attributes",
     "get_context_propagator",
-    "get_trace_context",
     "get_tracer",
     "propagate_context_in_stomp_headers",
     "retrieve_context_from_stomp_headers",

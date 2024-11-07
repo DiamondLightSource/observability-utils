@@ -4,7 +4,7 @@ context proagation setup.
 
 from typing import Any, cast
 
-from opentelemetry.context import Context, get_current
+from opentelemetry.context import Context
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
     OTLPSpanExporter,
 )
@@ -68,15 +68,6 @@ def get_tracer(name: str) -> Tracer:
         Tracer: The currently active tracer object.
     """
     return get_tracer_provider().get_tracer("opentelemetry.instrumentation." + name)
-
-
-def get_trace_context() -> Context:
-    """Somewhat redundant but the fn name "get_current" is pretty ambiguous.
-
-    Returns:
-        Context: The retrieved Trace context object for the current trace.
-    """
-    return get_current()
 
 
 def get_context_propagator() -> dict[str, Any]:
