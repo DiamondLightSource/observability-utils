@@ -14,6 +14,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
     BatchSpanProcessor,
     ConsoleSpanExporter,
+    SimpleSpanProcessor,
 )
 from opentelemetry.trace import (
     Tracer,
@@ -52,7 +53,7 @@ def set_console_exporter() -> None:
     exporter so that the raw trace JSON is printed out there.
     """
     provider = cast(TracerProvider, get_tracer_provider())
-    provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+    provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
 
 
 def get_tracer(name: str) -> Tracer:
