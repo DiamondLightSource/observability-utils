@@ -32,6 +32,7 @@ def test_function_and_param_name_from_decorator_captured(exporter):
 
     with asserting_span_exporter(exporter, "decoratee", "param"):
         decoratee(1)
+        exporter.force_flush()
 
     span = exporter.top_span.result(timeout=0.0)
     assert len(span.attributes.keys()) == 1
@@ -48,6 +49,7 @@ def test_param_from_add_span_attributes_also_captured(exporter):
 
     with asserting_span_exporter(exporter, "decoratee", "param1", "other_param"):
         decoratee(1)
+        exporter.force_flush()
 
     span = exporter.top_span.result(timeout=0.0)
     assert len(span.attributes.keys()) == 2
@@ -62,6 +64,7 @@ def test_param_from_add_span_attributes_only_captured(exporter):
 
     with asserting_span_exporter(exporter, "decoratee", "added_param"):
         decoratee(1)
+        exporter.force_flush()
 
     span = exporter.top_span.result(timeout=0.0)
     assert len(span.attributes.keys()) == 1
