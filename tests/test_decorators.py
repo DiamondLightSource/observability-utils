@@ -1,13 +1,8 @@
 import re
 
-import pytest
 from opentelemetry.trace.propagation import get_current_span
 
-from observability_utils.tracing import (
-    get_tracer,
-    set_console_exporter,
-    setup_tracing,
-)
+from observability_utils.tracing import get_tracer
 from observability_utils.tracing.decorators import (
     _attr_path,
     _attr_value_of,
@@ -17,12 +12,6 @@ from observability_utils.tracing.decorators import (
 )
 
 NAME = "test_service"
-
-
-@pytest.fixture()
-def init_tracing():
-    setup_tracing(NAME, False)
-    set_console_exporter()
 
 
 def test_obj_of():
@@ -60,7 +49,7 @@ def test_attr_path():
     assert _attr_path(n) == "multi.part.name"
 
 
-def test_use_propagated_context(init_tracing):
+def test_use_propagated_context():
     trace_id = 164087499969805359226274920435881701965
     span_id = 1836941681154040884
     traceparent_from_ids = "00-7b721a5c2fa681d48b9815c92fe1724d-197e20b9fa4ba434-01"
@@ -79,7 +68,7 @@ def test_use_propagated_context(init_tracing):
     decoratee(carrier)
 
 
-def test_start_as_current_span(init_tracing):
+def test_start_as_current_span():
     @start_as_current_span(
         get_tracer(NAME),
         "param1",
@@ -114,7 +103,7 @@ def test_start_as_current_span(init_tracing):
     decoratee(2, two)
 
 
-def test_start_as_current_span_capturing_args(init_tracing):
+def test_start_as_current_span_capturing_args():
     @start_as_current_span(
         get_tracer(NAME),
         "args",
@@ -131,7 +120,7 @@ def test_start_as_current_span_capturing_args(init_tracing):
     decoratee(2, one)
 
 
-def test_start_as_current_span_capturing_kwargs(init_tracing):
+def test_start_as_current_span_capturing_kwargs():
     @start_as_current_span(
         get_tracer(NAME),
         "kwargs",
