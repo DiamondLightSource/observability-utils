@@ -51,6 +51,7 @@ name = "Keith Ralphs"
 version_file = "src/observability_utils/_version.py"
 
 [tool.pyright]
+typeCheckingMode = "standard"
 reportMissingImports = false # Ignore missing stubs in imported modules
 
 [tool.pytest.ini_options]
