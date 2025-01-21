@@ -77,7 +77,7 @@ def start_as_current_span(tracer: Tracer, *span_args: str):
 
     Args:
         tracer: The OpenTelemetry tracer to which the required Span should be attached
-        *span_args: The set of attribute identiers relating to the decorated method's
+        *span_args: The set of attribute identifiers relating to the decorated method's
             parameters, whose values should be added to the Span as Attributes
 
     Returns: The decorator function
