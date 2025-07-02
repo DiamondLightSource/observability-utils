@@ -2,6 +2,7 @@
 context proagation setup.
 """
 
+from os import environ
 from typing import Any, cast
 
 from opentelemetry.context import Context
@@ -17,6 +18,7 @@ from opentelemetry.sdk.trace.export import (
     SimpleSpanProcessor,
 )
 from opentelemetry.trace import (
+    ProxyTracerProvider,
     Tracer,
     get_current_span,
     get_tracer_provider,
@@ -41,11 +43,20 @@ def setup_tracing(name: str, with_otlp_export: bool = True) -> None:
         name (str): The name to be used in spans to refer to the application.
         with_otlp_export (bool): Indicates whether an OTLP Exporter shoudld be set up
     """
-    resource = Resource(attributes={"service.name": name})
-    provider = TracerProvider(resource=resource)
-    if with_otlp_export:
-        provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
-    set_tracer_provider(provider)
+
+    # Only create a TracerProvider if one does not already exist, in which case
+    # get_trace_provider will return a ProxyTracerProvider
+    if isinstance(get_tracer_provider(), ProxyTracerProvider):
+        resource = Resource(
+            attributes={
+                "service.name": name,
+                "service.instrument": environ.get("BEAMLINE", "Unknown"),
+            }
+        )
+        provider = TracerProvider(resource=resource)
+        if with_otlp_export:
+            provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+        set_tracer_provider(provider)
 
 
 def set_console_exporter() -> None:
@@ -114,4 +125,7 @@ def add_span_attributes(attributes: dict[str, AttributeValue]) -> None:
     Args:
         attributes: the dict of attributes to add
     """
+    for name, value in attributes.items():
+        if not isinstance(value, str | bool | int | float):
+            attributes[name] = str(value)
     get_current_span().set_attributes(attributes)

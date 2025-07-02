@@ -23,18 +23,24 @@ CONSOLE_PROCESSOR_INDEX = 0
 JSON_PROCESSOR_INDEX = 1
 
 
-def test_tracing_setup_with_console_exporter(trace_provider: TracerProvider):
+def test_tracing_setup_with_console_exporter(
+    trace_provider: TracerProvider, instrument_key: str, unknown_instrument: str
+):
     sp = trace_provider._active_span_processor._span_processors[CONSOLE_PROCESSOR_INDEX]
 
     assert trace_provider.resource.attributes[NAME_KEY] == NAME
+    assert trace_provider.resource.attributes[instrument_key] == unknown_instrument
     assert isinstance(sp, SimpleSpanProcessor)
     assert isinstance(sp.span_exporter, ConsoleSpanExporter)
 
 
-def test_tracing_setup_with_json_exporter(trace_provider: TracerProvider):
+def test_tracing_setup_with_json_exporter(
+    trace_provider: TracerProvider, instrument_key: str, unknown_instrument: str
+):
     sp = trace_provider._active_span_processor._span_processors[JSON_PROCESSOR_INDEX]
 
     assert trace_provider.resource.attributes[NAME_KEY] == NAME
+    assert trace_provider.resource.attributes[instrument_key] == unknown_instrument
     assert isinstance(sp, SimpleSpanProcessor)
     assert isinstance(sp.span_exporter, JsonObjectSpanExporter)
 
