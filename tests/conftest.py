@@ -1,11 +1,12 @@
 import os
+from collections.abc import Iterator
 from typing import cast
 from unittest.mock import patch
 
+import opentelemetry.trace
 import pytest
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.trace import get_tracer_provider
 
 from observability_utils.tracing import (
     JsonObjectSpanExporter,
@@ -47,13 +48,27 @@ def instrument_key() -> str:
 
 
 @patch.dict(os.environ, clear=True)
-@pytest.fixture(scope="session", autouse=True)
-def trace_provider(request) -> TracerProvider:
+@pytest.fixture(autouse=True)
+def trace_provider(request: pytest.FixtureRequest) -> Iterator[TracerProvider]:
     if hasattr(request, "param"):
-        os.environ["BEAMLINE"] = request.param
-    setup_tracing("tests", False)
-    provider = cast(TracerProvider, get_tracer_provider())
+        with patch.dict(
+            os.environ,
+            {
+                "BEAMLINE": (
+                    request.param["beamline"]
+                    if "beamline" in request.param
+                    else UNKNOWN_INSTRUMENT
+                )
+            },
+            clear=True,
+        ):
+            setup_tracing("tests", request.param["export"])
+    else:
+        setup_tracing("tests", False)
+    provider = cast(TracerProvider, opentelemetry.trace.get_tracer_provider())
     # Use SimpleSpanProcessor to keep tests quick
     set_console_exporter()
     provider.add_span_processor(SimpleSpanProcessor(JsonObjectSpanExporter()))
-    return provider
+    yield provider
+    opentelemetry.trace._TRACER_PROVIDER_SET_ONCE._done = False
+    opentelemetry.trace._TRACER_PROVIDER = None

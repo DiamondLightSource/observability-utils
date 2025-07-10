@@ -1,11 +1,20 @@
 from typing import cast
 
+import pytest
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
+    OTLPSpanExporter,
+)
 from opentelemetry.sdk.trace import Tracer, TracerProvider
-from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+from opentelemetry.sdk.trace.export import (
+    BatchSpanProcessor,
+    ConsoleSpanExporter,
+    SimpleSpanProcessor,
+)
 from opentelemetry.trace import SpanKind, get_current_span
 from opentelemetry.trace.span import format_span_id, format_trace_id
 from stomp.utils import Frame
 
+from conftest import FAKE_INSTRUMENT
 from observability_utils.tracing import (
     JsonObjectSpanExporter,
     add_span_attributes,
@@ -23,8 +32,11 @@ CONSOLE_PROCESSOR_INDEX = 0
 JSON_PROCESSOR_INDEX = 1
 
 
+@pytest.mark.parametrize("trace_provider", [{"export": False}], indirect=True)
 def test_tracing_setup_with_console_exporter(
-    trace_provider: TracerProvider, instrument_key: str, unknown_instrument: str
+    trace_provider: TracerProvider,
+    instrument_key: str,
+    unknown_instrument: str,
 ):
     sp = trace_provider._active_span_processor._span_processors[CONSOLE_PROCESSOR_INDEX]
 
@@ -34,15 +46,25 @@ def test_tracing_setup_with_console_exporter(
     assert isinstance(sp.span_exporter, ConsoleSpanExporter)
 
 
+@pytest.mark.parametrize(
+    "trace_provider", [{"beamline": FAKE_INSTRUMENT, "export": False}], indirect=True
+)
 def test_tracing_setup_with_json_exporter(
-    trace_provider: TracerProvider, instrument_key: str, unknown_instrument: str
+    trace_provider: TracerProvider, instrument_key: str, fake_instrument: str
 ):
     sp = trace_provider._active_span_processor._span_processors[JSON_PROCESSOR_INDEX]
 
     assert trace_provider.resource.attributes[NAME_KEY] == NAME
-    assert trace_provider.resource.attributes[instrument_key] == unknown_instrument
+    assert trace_provider.resource.attributes[instrument_key] == fake_instrument
     assert isinstance(sp, SimpleSpanProcessor)
     assert isinstance(sp.span_exporter, JsonObjectSpanExporter)
+
+
+@pytest.mark.parametrize("trace_provider", [{"export": True}], indirect=True)
+def test_span_exporter_selection(trace_provider: TracerProvider):
+    sp = trace_provider._active_span_processor._span_processors[CONSOLE_PROCESSOR_INDEX]
+    assert isinstance(sp, BatchSpanProcessor)
+    assert isinstance(sp.span_exporter, OTLPSpanExporter)
 
 
 def test_get_context_propagator():
