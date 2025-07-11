@@ -36,7 +36,7 @@ def test_function_and_param_name_from_decorator_captured(exporter):
 
     span = exporter.top_span.result(timeout=0.0)
     assert span.attributes
-    assert len(span.attributes.keys()) == 1
+    assert span.attributes == {"param": 1}
 
 
 def test_param_from_add_span_attributes_also_captured(exporter):

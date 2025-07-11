@@ -47,10 +47,12 @@ def setup_tracing(name: str, with_otlp_export: bool = True) -> None:
     # Only create a TracerProvider if one does not already exist, in which case
     # get_trace_provider will return a ProxyTracerProvider
     if isinstance(get_tracer_provider(), ProxyTracerProvider):
+        instrument = environ.get("INSTRUMENT", environ.get("BEAMLINE", "Unknown"))
         resource = Resource(
             attributes={
                 "service.name": name,
-                "service.instrument": environ.get("BEAMLINE", "Unknown"),
+                "service.instrument": instrument,
+                "service.beamline": instrument,
             }
         )
         provider = TracerProvider(resource=resource)
