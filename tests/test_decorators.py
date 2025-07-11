@@ -1,5 +1,6 @@
 import re
 
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.trace.propagation import get_current_span
 
 from observability_utils.tracing import get_tracer
@@ -68,7 +69,7 @@ def test_use_propagated_context():
     decoratee(carrier)
 
 
-def test_start_as_current_span():
+def test_start_as_current_span(trace_provider: TracerProvider):
     @start_as_current_span(
         get_tracer(NAME),
         "param1",
@@ -81,6 +82,7 @@ def test_start_as_current_span():
     )
     def decoratee(param1, param2):
         attributes = get_current_span().attributes  # type: ignore
+        assert attributes
         assert "param1" in attributes
         assert attributes["param1"] == 2
         assert ("param2.a") in attributes
@@ -89,7 +91,7 @@ def test_start_as_current_span():
         assert attributes["param2.b"] == "blank"
         assert ("param2.node") in attributes
         assert re.fullmatch(
-            "<test_decorators.Node object at .*>", attributes["param2.node"]
+            "<test_decorators.Node object at .*>", str(attributes["param2.node"])
         )
         assert ("param2.node.a") in attributes
         assert attributes["param2.node.a"] == 0
@@ -103,13 +105,14 @@ def test_start_as_current_span():
     decoratee(2, two)
 
 
-def test_start_as_current_span_capturing_args():
+def test_start_as_current_span_capturing_args(trace_provider: TracerProvider):
     @start_as_current_span(
         get_tracer(NAME),
         "args",
     )
     def decoratee(param1, param2):
         attributes = get_current_span().attributes  # type: ignore
+        assert attributes
         assert "args" in attributes
         assert re.fullmatch(
             r"\(2,\s<test_decorators.Node object at .*>\)",
@@ -120,13 +123,14 @@ def test_start_as_current_span_capturing_args():
     decoratee(2, one)
 
 
-def test_start_as_current_span_capturing_kwargs():
+def test_start_as_current_span_capturing_kwargs(trace_provider: TracerProvider):
     @start_as_current_span(
         get_tracer(NAME),
         "kwargs",
     )
     def decoratee(param1, param2):
         attributes = get_current_span().attributes  # type: ignore
+        assert attributes
         assert "kwargs" in attributes
         assert re.fullmatch(
             r"{'param2':\s<test_decorators.Node object at .*>,\s'param1':\s2}",

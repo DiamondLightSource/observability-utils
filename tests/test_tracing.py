@@ -95,6 +95,7 @@ def test_propagate_context_in_stomp_headers():
     assert tr.instrumentation_info.name == PREFIX + NAME
     assert headers[TRACEPARENT_KEY] == traceparent_string
     attributes = span.attributes  # type: ignore
+    assert attributes
     assert "x" in attributes
     assert attributes["x"] == 4
 
@@ -115,5 +116,6 @@ def test_retrieve_context_from_stomp_headers():
     assert tr.instrumentation_info.name == PREFIX + NAME
     assert span.get_span_context().trace_id == trace_id
     attributes = span.attributes  # type: ignore
+    assert attributes
     assert "x" in attributes
     assert attributes["x"] == 4

@@ -47,9 +47,10 @@ def instrument_key() -> str:
     return INSTRUMENT_KEY
 
 
-@patch.dict(os.environ, clear=True)
 @pytest.fixture(autouse=True)
 def trace_provider(request: pytest.FixtureRequest) -> Iterator[TracerProvider]:
+    """Must be called by each test that needs a TracerProvider as it creates one before
+    and then removes it existing one at the end of such test."""
     if hasattr(request, "param"):
         with patch.dict(
             os.environ,

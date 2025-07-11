@@ -35,6 +35,7 @@ def test_function_and_param_name_from_decorator_captured(exporter):
         exporter.force_flush()
 
     span = exporter.top_span.result(timeout=0.0)
+    assert span.attributes
     assert len(span.attributes.keys()) == 1
 
 
@@ -52,6 +53,7 @@ def test_param_from_add_span_attributes_also_captured(exporter):
         exporter.force_flush()
 
     span = exporter.top_span.result(timeout=0.0)
+    assert span.attributes
     assert span.attributes["param1"] == 1
     assert span.attributes["other_param"] == 45
     assert len(span.attributes.keys()) == 2
@@ -70,6 +72,7 @@ def test_param_from_add_span_attributes_only_captured(exporter):
         exporter.force_flush()
 
     span = exporter.top_span.result(timeout=0.0)
+    assert span.attributes
     assert span.attributes["added_param"] == 45
     assert span.attributes["none_param"] == "None"
     assert len(span.attributes.keys()) == 2
