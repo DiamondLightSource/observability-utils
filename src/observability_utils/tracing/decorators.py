@@ -71,7 +71,9 @@ def _attr_path(param: str) -> str | None:
     return param.partition(_SEPARATOR)[2] if _SEPARATOR in param else None
 
 
-def start_as_current_span(tracer: Tracer, *span_args: str):
+def start_as_current_span(
+    tracer: Tracer, *span_args: str
+) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """Decorator to wrap the opentelementry tracer function of the same name. It
     automatically add the specified function parameters to the span attributes.
 
