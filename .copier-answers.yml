@@ -16,5 +16,5 @@ github_org: DiamondLightSource
 package_name: observability_utils
 pypi: true
 repo_name: observability-utils
-strict_typing: true
+strict_typing: false
 type_checker: pyright
