@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier
-_commit: 2.5.0
+_commit: 5.5.0
 _src_path: gh:DiamondLightSource/python-copier-template
 author_email: keith.ralphs@diamond.ac.uk
 author_name: Keith Ralphs
@@ -16,4 +16,5 @@ github_org: DiamondLightSource
 package_name: observability_utils
 pypi: true
 repo_name: observability-utils
+strict_typing: false
 type_checker: pyright

@@ -23,8 +23,9 @@ in tests.
 * ```asserting_span_exporter``` - A contextmanager that makes use of JsonObjectSpanExporter to allow
 functions under test to be checked by enclosing them in a with block.
 
-Source          | <https://github.com/DiamondLightSource/observability-utils>
+What            | Where
 :---:           | :---:
+Source          | <https://github.com/DiamondLightSource/observability-utils>
 PyPI            | `pip install observability-utils`
 Releases        | <https://github.com/DiamondLightSource/observability-utils/releases>
 
